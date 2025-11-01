@@ -7,4 +7,4 @@ duration 1
 file 'static/4.jpg'
 duration 1
 file 'static/5.jpg'
-duration 2
+duration 2 

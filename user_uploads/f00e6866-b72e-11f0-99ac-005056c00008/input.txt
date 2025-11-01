@@ -1,0 +1,6 @@
+file '1000147593.jpg'
+duration 1
+file 'seascape-4844697.jpg'
+duration 1
+file '1.jpg'
+duration 1

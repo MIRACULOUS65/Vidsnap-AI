@@ -1,27 +1,25 @@
+
 import os
 import uuid
-from dotenv import load_dotenv
-import elevenlabs
+from elevenlabs import VoiceSettings
+from elevenlabs.client import ElevenLabs
 from config import ELEVENLABS_API_KEY
 
-load_dotenv()
-
-# Use environment variable if available, otherwise fall back to config
-api_key = os.getenv("ELEVENLABS_API_KEY") or ELEVENLABS_API_KEY
+ 
+client = ElevenLabs(
+    api_key=ELEVENLABS_API_KEY,
+)
 
 
 def text_to_speech_file(text: str, folder: str) -> str:
-    # Set the API key
-    elevenlabs.set_api_key(api_key)
-    
     # Calling the text_to_speech conversion API with detailed parameters
-    audio = elevenlabs.text_to_speech.convert(
-        voice_id="pNInz6obpgDQGcFmaJgB",  # Adam pre-made voice
+    response = client.text_to_speech.convert(
+        voice_id="pNInz6obpgDQGcFmaJgB", # Adam pre-made voice
         output_format="mp3_22050_32",
         text=text,
-        model_id="eleven_turbo_v2_5",  # use the turbo model for low latency
+        model_id="eleven_turbo_v2_5", # use the turbo model for low latency
         # Optional voice settings that allow you to customize the output
-        voice_settings=elevenlabs.VoiceSettings(
+        voice_settings=VoiceSettings(
             stability=0.0,
             similarity_boost=1.0,
             style=0.0,
@@ -30,12 +28,15 @@ def text_to_speech_file(text: str, folder: str) -> str:
         ),
     )
 
+    # uncomment the line below to play the audio back
+    # play(response)
+
     # Generating a unique file name for the output MP3 file
-    save_file_path = os.path.join("user_uploads", folder, "audio.mp3")
+    save_file_path = os.path.join(f"user_uploads/{folder}", "audio.mp3")
 
     # Writing the audio to a file
     with open(save_file_path, "wb") as f:
-        for chunk in audio:
+        for chunk in response:
             if chunk:
                 f.write(chunk)
 
@@ -44,3 +45,5 @@ def text_to_speech_file(text: str, folder: str) -> str:
     # Return the path of the saved audio file
     return save_file_path
 
+
+# text_to_speech_file("Hey I am a good boy and its the python course", "ac9a7034-2bf9-11f0-b9c0-ad551e1c593a")
