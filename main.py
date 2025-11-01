@@ -2,11 +2,17 @@ from flask import Flask, render_template,request, redirect, url_for
 from werkzeug.utils import secure_filename
 import uuid
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 UPLOAD_FOLDER = 'user_uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-change-this')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 
 
@@ -58,4 +64,6 @@ def gallery():
     print(reels)
     return render_template("gallery.html",reels=reels)
 
-app.run(debug=True)
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=os.getenv('FLASK_ENV') != 'production')
