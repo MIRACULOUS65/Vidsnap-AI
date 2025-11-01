@@ -14,6 +14,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-change-this')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
+# Ensure directories exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs('static/reels', exist_ok=True)
+os.makedirs('static/songs', exist_ok=True)
+
 
 
 @app.route("/")
@@ -60,9 +65,16 @@ def create():
 
 @app.route("/gallery")
 def gallery():
-    reels= os.listdir("static/reels")
-    print(reels)
-    return render_template("gallery.html",reels=reels)
+    try:
+        reels = os.listdir("static/reels")
+        # Filter only .mp4 files
+        reels = [reel for reel in reels if reel.endswith('.mp4')]
+        print(f"Found reels: {reels}")
+    except FileNotFoundError:
+        print("static/reels directory not found, creating...")
+        os.makedirs("static/reels", exist_ok=True)
+        reels = []
+    return render_template("gallery.html", reels=reels)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
